@@ -1,13 +1,17 @@
 package models
 
 import (
+	"fmt"
 	"gorm.io/driver/postgres"
-  "gorm.io/gorm"
+	"gorm.io/gorm"
+	"os"
 )
+
 var DB *gorm.DB
 
 func ConnectDataBase() {
-	dsn := "host=postgres user=postgres port=5432 sslmode=disable"
+	dsn := fmt.Sprintf("host=%s user=%s port=%s sslmode=%s", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PORT"), os.Getenv("DB_SSL"))
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -16,13 +20,13 @@ func ConnectDataBase() {
 
 	db.AutoMigrate(&Cafe{})
 
-	lula := Cafe{Name: "Lula Rose", 
-							 Address: "123 Street Ave.",
-							 City: "Denver",
-							 State: "Colorado",
-							 Zip: "12345",
-							 Rating: 90,
-							}
+	lula := Cafe{Name: "Lula Rose",
+		Address: "123 Street Ave.",
+		City:    "Denver",
+		State:   "Colorado",
+		Zip:     "12345",
+		Rating:  90,
+	}
 	db.Create(&lula)
 
 	DB = db
