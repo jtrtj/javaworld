@@ -1,7 +1,6 @@
 package services
 
 import 	(
-	"github.com/joho/godotenv"
 	"net/url"
 	"log"
 	"os"
@@ -11,12 +10,6 @@ import 	(
 )
 
 func Call() PlacesResponse {
-	// models.ConnectDataBase()
-	err := godotenv.Load()
-  if err != nil {
-    log.Fatal("Error loading .env file")
-	}
-	
 	base, err := url.Parse("https://maps.googleapis.com/maps/api/place/")
 
 	if err != nil {
