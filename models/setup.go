@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
+	"github.com/jtrtj/javaworld/services"
 )
 
 var DB *gorm.DB
@@ -19,15 +20,14 @@ func ConnectDataBase() {
 	}
 
 	db.AutoMigrate(&Cafe{})
-
-	lula := Cafe{Name: "Lula Rose",
-		Address: "123 Street Ave.",
-		City:    "Denver",
-		State:   "Colorado",
-		Zip:     "12345",
-		Rating:  90,
-	}
-	db.Create(&lula)
-
 	DB = db
+}
+
+func SeedDatabase() {
+	api_call := services.Call()
+	results := api_call.Results
+	for _, input := range results {
+		cafe := Cafe{Name: input.Name, Address: input.Vicinity}
+		DB.Create(&cafe)
+	}
 }
