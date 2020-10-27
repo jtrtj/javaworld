@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"os"
 	"github.com/jtrtj/javaworld/services"
+	"time"
 )
 
 var DB *gorm.DB
@@ -29,5 +30,19 @@ func SeedDatabase() {
 	for _, input := range results {
 		cafe := Cafe{Name: input.Name, Address: input.Vicinity}
 		DB.Create(&cafe)
+	}
+	check(api_call)
+}
+
+func check(results services.PlacesResponse) {
+	time.Sleep(3000 * time.Millisecond)
+	if len(results.NextPageToken) > 0 {
+		api_call := services.CallNextPage(results.NextPageToken)
+		results := api_call.Results
+		for _, input := range results {
+			cafe := Cafe{Name: input.Name, Address: input.Vicinity}
+			DB.Create(&cafe)
+		}
+		check(api_call)
 	}
 }
