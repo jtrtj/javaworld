@@ -9,7 +9,8 @@ import (
 func main() {
 	router := gin.Default()
 	models.ConnectDataBase()
-	models.SeedDatabase()
+	// comment the line below to seed/reseed database. Need to set up as a daily task in the future.
+	// models.SeedDatabase()
 
 
 	router.GET("/ping", func(c *gin.Context) {
