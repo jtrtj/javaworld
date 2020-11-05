@@ -5,6 +5,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
+	"github.com/jtrtj/javaworld/services"
+	"time"
 )
 
 var DB *gorm.DB
@@ -19,15 +21,46 @@ func ConnectDataBase() {
 	}
 
 	db.AutoMigrate(&Cafe{})
-
-	lula := Cafe{Name: "Lula Rose",
-		Address: "123 Street Ave.",
-		City:    "Denver",
-		State:   "Colorado",
-		Zip:     "12345",
-		Rating:  90,
-	}
-	db.Create(&lula)
-
 	DB = db
+}
+
+func SeedDatabase() {
+	api_call := services.Call()
+	results := api_call.Results
+	for _, input := range results {
+		if ( input.Name == "Starbucks" || input.Name == "Peet's Coffee" ) {
+			continue
+		}
+		cafe := Cafe{
+								 Name: input.Name, 
+								 Address: input.Vicinity,
+								 GoogleRating: input.Rating,
+								 Lat: input.Geometry.Location.Lat,
+								 Lng: input.Geometry.Location.Lng,
+								}
+		DB.Create(&cafe)
+	}
+	check(api_call)
+}
+
+func check(results services.PlacesResponse) {
+	time.Sleep(3000 * time.Millisecond)
+	if len(results.NextPageToken) > 0 {
+		api_call := services.CallNextPage(results.NextPageToken)
+		results := api_call.Results
+		for _, input := range results {
+			if ( input.Name == "Starbucks" || input.Name == "Peet's Coffee" ) {
+				continue
+			}
+			cafe := Cafe{
+								 Name: input.Name, 
+								 Address: input.Vicinity,
+								 GoogleRating: input.Rating,
+								 Lat: input.Geometry.Location.Lat,
+								 Lng: input.Geometry.Location.Lng,
+								}
+			DB.Create(&cafe)
+		}
+		check(api_call)
+	}
 }

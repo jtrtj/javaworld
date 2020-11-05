@@ -1,14 +1,16 @@
 package main
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/jtrtj/javaworld/models"
+	"net/http"
 )
 
 func main() {
 	router := gin.Default()
 	models.ConnectDataBase()
+	// comment the line below to seed/reseed database. Need to set up as a daily task in the future.
+	// models.SeedDatabase()
 
 
 	router.GET("/ping", func(c *gin.Context) {
